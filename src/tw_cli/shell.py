@@ -22,10 +22,17 @@ from .views.list import ListView
 class InteractiveShell:
     """Interactive shell for tw-cli"""
     
-    def __init__(self):
+    def __init__(self, backend_override: Optional[str] = None):
         self.console = Console()
         self.config = get_config()
-        self.backend = create_backend(self.config.backend)
+        
+        # Override backend type if provided
+        backend_config = self.config.backend
+        if backend_override:
+            backend_config = backend_config.model_copy(update={"type": backend_override.lower()})
+        
+        self.backend = create_backend(backend_config)
+        self.backend_type = backend_config.type
         self.current_view = self.config.default_view
         self.current_group_by = self.config.kanban.group_by
         self.running = True
@@ -214,7 +221,7 @@ Example: `task +work`, `task project:home status:pending`
             self.console.print("[dim]Run with --debug for full traceback[/dim]\n")
 
 
-def start_shell():
+def start_shell(backend_override: Optional[str] = None):
     """Start the interactive shell"""
-    shell = InteractiveShell()
+    shell = InteractiveShell(backend_override=backend_override)
     shell.run()

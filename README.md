@@ -46,6 +46,24 @@ Shell commands:
 - `.help` - Show help
 - `.exit` - Exit
 
+### Switch Backends at Runtime
+
+```bash
+# Use TaskWarrior backend
+tw-cli view kanban --backend taskwarrior
+tw-cli shell --backend taskwarrior
+
+# Use Jira backend
+tw-cli view table --backend jira
+tw-cli shell -b jira
+
+# Use with custom commands
+tw-cli view kanban -b taskwarrior -c "task +work"
+tw-cli view table -b jira -c "jira issue list --plain --status='~Done'"
+```
+
+The `--backend` flag overrides the backend configured in `config.toml`, allowing you to switch between TaskWarrior and Jira without editing configuration.
+
 ### Run Taskwarrior Filters
 
 ```bash
@@ -108,6 +126,24 @@ tw-cli uses a **pluggable backend architecture** to work with different CLI tool
 | **Taskwarrior** | ✅ Full Support | `task` | Default backend, all features work |
 | **Jira-CLI** | ✅ Ready | `jira` | Full integration with field mapping |
 | **Custom** | ⚙️ Configurable | Any | Define your own JSON-based CLI tool |
+
+### Runtime Backend Selection
+
+Use the `--backend` flag to switch between backends without editing configuration:
+
+```bash
+# View TaskWarrior tasks
+tw-cli view kanban --backend taskwarrior
+
+# View Jira issues
+tw-cli view table --backend jira
+
+# Start shell with specific backend
+tw-cli shell -b taskwarrior
+tw-cli shell -b jira
+```
+
+This overrides the backend set in `config.toml`, allowing seamless switching between TaskWarrior and Jira workflows.
 
 ### Configuration
 

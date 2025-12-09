@@ -29,10 +29,18 @@ console = Console()
 
 
 @app.command()
-def shell():
-    """Start interactive shell mode (like DuckDB CLI)"""
+def shell(
+    backend: Optional[str] = typer.Option(None, "--backend", "-b", help="Backend to use: taskwarrior, jira (overrides config)"),
+):
+    """
+    Start interactive shell mode (like DuckDB CLI)
+    
+    Examples:
+        tw-cli shell --backend taskwarrior
+        tw-cli shell -b jira
+    """
     try:
-        start_shell()
+        start_shell(backend_override=backend)
     except KeyboardInterrupt:
         console.print("\n[yellow]Goodbye![/yellow]")
     except Exception as e:
@@ -43,30 +51,38 @@ def shell():
 @app.command()
 def view(
     mode: str = typer.Argument("kanban", help="View mode: kanban, table, markdown, list"),
-    command: Optional[str] = typer.Option(None, "--cmd", "-c", help="Taskwarrior command to execute"),
+    command: Optional[str] = typer.Option(None, "--cmd", "-c", help="Command to execute (task/jira command)"),
     group_by: Optional[str] = typer.Option(None, "--group", "-g", help="Kanban grouping: status, priority, project, tag"),
+    backend: Optional[str] = typer.Option(None, "--backend", "-b", help="Backend to use: taskwarrior, jira (overrides config)"),
 ):
     """
-    Execute a taskwarrior command and display in specified view mode
+    Execute a command and display in specified view mode
     
     Examples:
-        tw-cli view kanban --cmd "task +work"
-        tw-cli view table --cmd "task project:home"
-        tw-cli view kanban --group priority --cmd "task status:pending"
+        tw-cli view kanban --backend taskwarrior --cmd "task +work"
+        tw-cli view table --backend jira
+        tw-cli view kanban --group priority --backend taskwarrior
+        tw-cli view table -b jira -c "jira issue list --plain --status='~Done'"
     """
     try:
         # Get config
         config = get_config()
         
-        # Create backend based on configuration
-        backend = create_backend(config.backend)
+        # Override backend type if provided via command line
+        backend_config = config.backend
+        if backend:
+            # Create a modified backend config with the runtime override
+            backend_config = backend_config.model_copy(update={"type": backend.lower()})
+        
+        # Create backend based on configuration (or override)
+        backend_instance = create_backend(backend_config)
         
         # Default command if none provided
         if not command:
-            command = "task" if config.backend.type == "taskwarrior" else f"{config.backend.command} issue list --plain"
+            command = "task" if backend_config.type == "taskwarrior" else f"{backend_config.command} issue list --plain"
         
         # Execute command via backend
-        tasks = backend.execute_command(command)
+        tasks = backend_instance.execute_command(command)
         
         # Render in requested view
         if mode == "kanban":
