@@ -131,3 +131,117 @@ enable_autocomplete = true
 
 # Show welcome message
 show_welcome = true
+
+
+---
+
+# tw-cli Configuration File
+
+# Default view mode when entering shell
+default_view = "kanban"
+
+[kanban]
+# Grouping strategy: "status", "priority", "project", "tag", "custom"
+group_by = "status"
+
+# Show completed tasks from last N days
+show_completed = true
+completed_days = 7
+
+# Maximum tasks per column (prevents overflow)
+# Set higher if you want to see more tasks at once
+max_tasks_per_column = 20
+
+# For tag-based grouping (if you use organized tags)
+# Example: +area.work, +area.personal, +area.learning
+# tag_prefix = "area"
+
+# Custom columns example (when group_by = "custom")
+# [[kanban.columns]]
+# name = "🔥 Today"
+# filter = "due:today"
+# color = "red"
+#
+# [[kanban.columns]]
+# name = "📅 This Week"
+# filter = "due:week"
+# color = "yellow"
+#
+# [[kanban.columns]]
+# name = "📌 Important"
+# filter = "priority:H"
+# color = "red"
+
+[table]
+# Columns to display (available: id, description, project, tags, due, priority, urgency, status)
+columns = ["id", "description", "project", "tags", "due", "priority", "urgency"]
+
+# Default sort column and order
+default_sort = "urgency"
+sort_order = "desc"  # or "asc"
+
+# Pagination (not yet implemented, for future)
+page_size = 50
+
+# Show grid lines
+show_grid = true
+
+[markdown]
+# Group tasks by project in markdown view
+group_by_project = true
+
+# Include metadata in frontmatter
+include_metadata = true
+
+# Use checkboxes for pending tasks
+use_checkboxes = true
+
+[list]
+# Truncate long descriptions
+truncate_description = false
+max_description_length = 100
+
+# Show task IDs
+show_ids = true
+
+[colors]
+# Priority colors (H/M/L)
+priority_high = "red"
+priority_medium = "yellow"
+priority_low = "blue"
+priority_none = "white"
+
+# Status colors
+status_active = "green bold"
+status_pending = "cyan"
+status_waiting = "yellow"
+status_completed = "dim"
+status_blocked = "red"
+
+# Urgency thresholds and colors
+urgency_critical = 15.0  # Tasks >= 15 urgency
+urgency_high = 10.0      # Tasks >= 10 urgency
+urgency_medium = 5.0     # Tasks >= 5 urgency
+# Below 5 is considered low
+
+urgency_critical_color = "red bold"
+urgency_high_color = "red"
+urgency_medium_color = "yellow"
+urgency_low_color = "white"
+
+[shell]
+# Enable command history
+enable_history = true
+history_file = "~/.config/tw-cli/history"
+
+# Auto-completion (for future implementation)
+enable_autocomplete = true
+
+# Show welcome message when starting shell
+show_welcome = true
+
+# Recommended taskwarrior aliases to add to your .taskrc or .zshrc:
+# alias tw='tw-cli shell'
+# alias twk='tw-cli view kanban --cmd'
+# alias twt='tw-cli view table --cmd'
+# alias twl='tw-cli view list --cmd'
