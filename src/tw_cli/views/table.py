@@ -72,13 +72,25 @@ class TableView(BaseView):
         # Show stats
         stats_parts = [f"Total: {len(tasks)} tasks"]
         if overdue:
-            stats_parts.append(f"[red]{overdue} overdue[/red]")
+            if self.config.colors.enabled:
+                stats_parts.append(f"[red]{overdue} overdue[/red]")
+            else:
+                stats_parts.append(f"{overdue} overdue")
         if due_soon:
-            stats_parts.append(f"[yellow]{due_soon} due soon[/yellow]")
+            if self.config.colors.enabled:
+                stats_parts.append(f"[yellow]{due_soon} due soon[/yellow]")
+            else:
+                stats_parts.append(f"{due_soon} due soon")
         if high_urgency:
-            stats_parts.append(f"[bold]{high_urgency} high urgency[/bold]")
+            if self.config.colors.enabled:
+                stats_parts.append(f"[bold]{high_urgency} high urgency[/bold]")
+            else:
+                stats_parts.append(f"{high_urgency} high urgency")
         
-        self.console.print(f"\n[dim]{' • '.join(stats_parts)}[/dim]\n")
+        if self.config.colors.enabled:
+            self.console.print(f"\n[dim]{' • '.join(stats_parts)}[/dim]\n")
+        else:
+            self.console.print(f"\n{' • '.join(stats_parts)}\n")
     
     def _sort_tasks(self, tasks: List[Task]) -> List[Task]:
         """Sort tasks by the configured column"""
@@ -231,8 +243,11 @@ class TableView(BaseView):
                 row.append(f"{task.urgency:.1f}")
         
         if "status" in columns:
-            status_color = self.get_status_color(task)
-            row.append(f"[{status_color}]{task.status}[/{status_color}]")
+            if self.config.colors.enabled:
+                status_color = self.get_status_color(task)
+                row.append(f"[{status_color}]{task.status}[/{status_color}]")
+            else:
+                row.append(task.status)
         
         table.add_row(*row)
     

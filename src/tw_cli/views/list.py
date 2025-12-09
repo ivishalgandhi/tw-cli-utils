@@ -42,11 +42,20 @@ class ListView(BaseView):
         # Show stats
         stats_parts = [f"Total: {len(tasks)} tasks"]
         if overdue:
-            stats_parts.append(f"[red]{overdue} overdue[/red]")
+            if self.config.colors.enabled:
+                stats_parts.append(f"[red]{overdue} overdue[/red]")
+            else:
+                stats_parts.append(f"{overdue} overdue")
         if due_soon:
-            stats_parts.append(f"[yellow]{due_soon} due soon[/yellow]")
+            if self.config.colors.enabled:
+                stats_parts.append(f"[yellow]{due_soon} due soon[/yellow]")
+            else:
+                stats_parts.append(f"{due_soon} due soon")
         
-        self.console.print(f"\n[dim]{' • '.join(stats_parts)}[/dim]\n")
+        if self.config.colors.enabled:
+            self.console.print(f"\n[dim]{' • '.join(stats_parts)}[/dim]\n")
+        else:
+            self.console.print(f"\n{' • '.join(stats_parts)}\n")
     
     def _render_task(self, task: Task):
         """Render a single task"""
@@ -58,16 +67,29 @@ class ListView(BaseView):
             line.append(f"[{task.id or '?':>3}] ", style=id_style)
         
         # Status icon with color
-        if task.status == "completed":
-            line.append("✓ ", style="green")
-        elif task.is_active:
-            line.append("▶ ", style="yellow")
-        elif task.status == "waiting":
-            line.append("⏸ ", style="blue")
-        elif task.is_blocked:
-            line.append("🚫 ", style="red")
+        if self.config.colors.enabled:
+            if task.status == "completed":
+                line.append("✓ ", style="green")
+            elif task.is_active:
+                line.append("▶ ", style="yellow")
+            elif task.status == "waiting":
+                line.append("⏸ ", style="blue")
+            elif task.is_blocked:
+                line.append("🚫 ", style="red")
+            else:
+                line.append("○ ", style="dim")
         else:
-            line.append("○ ", style="dim")
+            # Black & white mode - no icons or use plain text
+            if task.status == "completed":
+                line.append("✓ ")
+            elif task.is_active:
+                line.append("▶ ")
+            elif task.status == "waiting":
+                line.append("⏸ ")
+            elif task.is_blocked:
+                line.append("! ")
+            else:
+                line.append("○ ")
         
         # Priority icon
         pri_icon = self.get_priority_icon(task.priority)
@@ -76,15 +98,21 @@ class ListView(BaseView):
         
         # Overdue indicator
         if task.is_overdue:
-            line.append("⚠ ", style="red bold")
+            if self.config.colors.enabled:
+                line.append("⚠ ", style="red bold")
+            else:
+                line.append("⚠ ")
         
         # Description
         desc = task.description
         if self.config.list.truncate_description:
             desc = self.truncate(desc, self.config.list.max_description_length)
         
-        urgency_color = self.get_urgency_color(task.urgency)
-        line.append(desc, style=urgency_color)
+        if self.config.colors.enabled:
+            urgency_color = self.get_urgency_color(task.urgency)
+            line.append(desc, style=urgency_color)
+        else:
+            line.append(desc)
         
         # Project
         if task.project:
@@ -112,7 +140,10 @@ class ListView(BaseView):
                 line.append(due_str)
         
         # Urgency with better styling
-        urg_style = "red bold" if task.urgency >= 15 else "yellow" if task.urgency >= 10 else "dim"
-        line.append(f" [{task.urgency:.1f}]", style=urg_style)
+        if self.config.colors.enabled:
+            urg_style = "red bold" if task.urgency >= 15 else "yellow" if task.urgency >= 10 else "dim"
+            line.append(f" [{task.urgency:.1f}]", style=urg_style)
+        else:
+            line.append(f" [{task.urgency:.1f}]")
         
         self.console.print(line)
