@@ -36,6 +36,34 @@ max_tasks_per_column = 20
 # filter = "priority:H"
 # color = "red"
 
+[colors]
+# Color support - set to false for black & white mode
+enabled = false
+
+# Priority colors (H/M/L)
+priority_high = "red"
+priority_medium = "yellow"
+priority_low = "blue"
+priority_none = "white"
+
+# Status colors
+status_active = "green bold"
+status_pending = "cyan"
+status_waiting = "yellow"
+status_completed = "dim"
+status_blocked = "red"
+
+# Urgency thresholds and colors
+urgency_critical = 15.0  # Tasks >= 15 urgency
+urgency_high = 10.0      # Tasks >= 10 urgency
+urgency_medium = 5.0     # Tasks >= 5 urgency
+# Below 5 is considered low
+
+urgency_critical_color = "red bold"
+urgency_high_color = "red"
+urgency_medium_color = "yellow"
+urgency_low_color = "white"
+
 [table]
 # Columns to display (available: id, description, project, tags, due, priority, urgency, status)
 columns = ["id", "description", "project", "tags", "due", "priority", "urgency"]
@@ -67,31 +95,6 @@ max_description_length = 100
 
 # Show task IDs
 show_ids = true
-
-[colors]
-# Priority colors (H/M/L)
-priority_high = "red"
-priority_medium = "yellow"
-priority_low = "blue"
-priority_none = "white"
-
-# Status colors
-status_active = "green bold"
-status_pending = "cyan"
-status_waiting = "yellow"
-status_completed = "dim"
-status_blocked = "red"
-
-# Urgency thresholds and colors
-urgency_critical = 15.0  # Tasks >= 15 urgency
-urgency_high = 10.0      # Tasks >= 10 urgency
-urgency_medium = 5.0     # Tasks >= 5 urgency
-# Below 5 is considered low
-
-urgency_critical_color = "red bold"
-urgency_high_color = "red"
-urgency_medium_color = "yellow"
-urgency_low_color = "white"
 
 [shell]
 # Enable command history

@@ -123,15 +123,19 @@ class TableView(BaseView):
         columns = self.config.table.columns
         
         if "id" in columns:
-            table.add_column("ID", justify="right", style="dim", no_wrap=True, min_width=4, max_width=6)
+            id_style = "dim" if self.config.colors.enabled else ""
+            table.add_column("ID", justify="right", style=id_style, no_wrap=True, min_width=4, max_width=6)
         if "description" in columns:
-            table.add_column("Description", style="white", no_wrap=False, ratio=3)  # Takes 3x space
+            table.add_column("Description", style="", no_wrap=False, ratio=3)  # Takes 3x space
         if "project" in columns:
-            table.add_column("Project", style="blue", no_wrap=True, ratio=1)
+            project_style = "blue" if self.config.colors.enabled else ""
+            table.add_column("Project", style=project_style, no_wrap=True, ratio=1)
         if "tags" in columns:
-            table.add_column("Tags", style="magenta", no_wrap=False, ratio=1)
+            tags_style = "magenta" if self.config.colors.enabled else ""
+            table.add_column("Tags", style=tags_style, no_wrap=False, ratio=1)
         if "due" in columns:
-            table.add_column("Due", style="yellow", no_wrap=True, min_width=12, max_width=15)
+            due_style = "yellow" if self.config.colors.enabled else ""
+            table.add_column("Due", style=due_style, no_wrap=True, min_width=12, max_width=15)
         if "priority" in columns:
             table.add_column("Pri", justify="center", no_wrap=True, min_width=4, max_width=5)
         if "urgency" in columns:
@@ -155,17 +159,8 @@ class TableView(BaseView):
             
             # Status icon from config
             if not self.config.colors.enabled:
-                # Black & white mode - no colors
-                if task.status == "completed":
-                    icon = "✓"
-                elif task.is_active:
-                    icon = "▶"
-                elif task.status == "waiting":
-                    icon = "⏸"
-                elif task.is_blocked:
-                    icon = "!"
-                else:
-                    icon = "○"
+                # Black & white mode - no icons
+                icon = ""
             else:
                 # Use configured colors
                 if task.status == "completed":
@@ -182,11 +177,17 @@ class TableView(BaseView):
             urgency_color = self.get_urgency_color(task.urgency) if self.config.colors.enabled else ""
             
             # Add overdue indicator
-            if task.is_overdue:
-                indicator = self.config.colors.overdue_indicator if self.config.colors.enabled else "⚠"
+            if task.is_overdue and self.config.colors.enabled:
+                indicator = self.config.colors.overdue_indicator
                 desc = f"{indicator} {desc}"
             
-            row.append(f"{icon} [{urgency_color}]{desc}[/{urgency_color}]")
+            # Build description with or without icon/color
+            if self.config.colors.enabled:
+                desc_formatted = f"{icon} [{urgency_color}]{desc}[/{urgency_color}]"
+            else:
+                desc_formatted = f"{icon} {desc}".strip() if icon else desc
+            
+            row.append(desc_formatted)
         
         if "project" in columns:
             row.append(task.project or "")
@@ -452,18 +453,21 @@ class TableView(BaseView):
         """Format task for kanban board cell (inspired by kanban-python)"""
         # Format ID with padding for alignment
         task_id = task.id or 0
-        id_str = f"[cyan]{task_id:02d}[/cyan]" if task_id < 100 else f"[cyan]{task_id}[/cyan]"
+        if self.config.colors.enabled:
+            id_str = f"[cyan]{task_id:02d}[/cyan]" if task_id < 100 else f"[cyan]{task_id}[/cyan]"
+        else:
+            id_str = f"{task_id:02d}" if task_id < 100 else f"{task_id}"
         
         # Get primary tag (project or first tag)
         tag = ""
         if task.project:
-            tag = f"[blue]{task.project}[/blue]"
+            tag = f"[blue]{task.project}[/blue]" if self.config.colors.enabled else f"{task.project}"
         elif task.tags:
             # Get first tag or most relevant one
             tag_text = task.tags[0] if task.tags else ""
-            tag = f"[orange3]{tag_text}[/orange3]"
+            tag = f"[orange3]{tag_text}[/orange3]" if self.config.colors.enabled else f"{tag_text}"
         else:
-            tag = "[dim]--[/dim]"
+            tag = "[dim]--[/dim]" if self.config.colors.enabled else "--"
         
         # Truncate description to fit column width dynamically
         max_desc_len = max(15, column_width - 15)
@@ -472,14 +476,20 @@ class TableView(BaseView):
             desc += "..."
         
         # Color based on urgency
-        urgency_color = self.get_urgency_color(task.urgency)
+        urgency_color = self.get_urgency_color(task.urgency) if self.config.colors.enabled else ""
         
         # Build task string: [ID] (TAG) Description
-        task_str = f"[[{id_str}]] ({tag}) [{urgency_color}]{desc}[/{urgency_color}]"
+        if self.config.colors.enabled:
+            task_str = f"[[{id_str}]] ({tag}) [{urgency_color}]{desc}[/{urgency_color}]"
+        else:
+            task_str = f"[[{id_str}]] ({tag}) {desc}"
         
         # Add urgency indicator if high
         if task.urgency >= 10:
-            task_str += f" [red]|{task.urgency:.1f}|[/red]"
+            if self.config.colors.enabled:
+                task_str += f" [red]|{task.urgency:.1f}|[/red]"
+            else:
+                task_str += f" |{task.urgency:.1f}|"
         
         # Add due date indicator if present
         if task.due:
@@ -492,9 +502,12 @@ class TableView(BaseView):
                     due = due.astimezone(timezone.utc)
             days_left = (due - now).days
             
-            if days_left < 0:
-                task_str += f" [red]|{days_left:02d}|[/red]"
-            elif days_left <= 7:
-                task_str += f" [yellow]|{days_left:02d}|[/yellow]"
+            if self.config.colors.enabled:
+                if days_left < 0:
+                    task_str += f" [red]|{days_left:02d}|[/red]"
+                elif days_left <= 7:
+                    task_str += f" [yellow]|{days_left:02d}|[/yellow]"
+            else:
+                task_str += f" |{days_left:02d}|"
         
         return task_str
