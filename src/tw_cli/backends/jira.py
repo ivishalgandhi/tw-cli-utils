@@ -188,7 +188,7 @@ class JiraBackend(BaseBackend):
         
         # Set defaults for required fields
         if "uuid" not in task_data:
-            task_data["uuid"] = task_data.get("id", "unknown")
+            task_data["uuid"] = str(task_data.get("id", "unknown"))
         if "description" not in task_data:
             task_data["description"] = "No summary"
         if "status" not in task_data:
