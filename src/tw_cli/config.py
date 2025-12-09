@@ -59,6 +59,9 @@ class ListConfig(BaseModel):
 
 class ColorConfig(BaseModel):
     """Color scheme configuration"""
+    # Enable/disable colors completely
+    enabled: bool = True
+    
     # Priority colors
     priority_high: str = "red"
     priority_medium: str = "yellow"
@@ -80,6 +83,27 @@ class ColorConfig(BaseModel):
     urgency_high_color: str = "red"
     urgency_medium_color: str = "yellow"
     urgency_low_color: str = "white"
+    
+    # Table/Kanban column header colors
+    header_backlog: str = "bold blue"
+    header_in_progress: str = "bold yellow"
+    header_waiting: str = "bold magenta"
+    header_completed: str = "bold green"
+    header_blocked: str = "bold red"
+    header_default: str = "bold cyan"
+    
+    # Table header style
+    table_header: str = "bold cyan"
+    
+    # Status icons with colors (for table/list views)
+    icon_completed: str = "[green]✓[/green]"
+    icon_active: str = "[yellow]▶[/yellow]"
+    icon_waiting: str = "[blue]⏸[/blue]"
+    icon_blocked: str = "[red]🚫[/red]"
+    icon_pending: str = "[dim]○[/dim]"
+    
+    # Overdue warning
+    overdue_indicator: str = "[red bold]⚠[/red bold]"
 
 
 class ShellConfig(BaseModel):
@@ -90,9 +114,25 @@ class ShellConfig(BaseModel):
     show_welcome: bool = True
 
 
+class BackendConfig(BaseModel):
+    """Backend/CLI tool configuration"""
+    type: str = "taskwarrior"  # taskwarrior, jira, or custom
+    command: str = "task"  # Base command to execute
+    export_format: str = "json"  # Output format
+    context_command: Optional[str] = None  # Command to get context (e.g., "task context show")
+    
+    # Custom field mappings for non-taskwarrior backends
+    # Maps backend fields to our Task model fields
+    field_mapping: Dict[str, str] = Field(default_factory=dict)
+    
+    # Additional command arguments
+    extra_args: List[str] = Field(default_factory=list)
+
+
 class Config(BaseModel):
     """Main configuration"""
     default_view: str = "kanban"
+    backend: BackendConfig = Field(default_factory=BackendConfig)
     kanban: KanbanConfig = Field(default_factory=KanbanConfig)
     table: TableConfig = Field(default_factory=TableConfig)
     markdown: MarkdownConfig = Field(default_factory=MarkdownConfig)

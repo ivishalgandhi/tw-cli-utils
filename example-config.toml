@@ -9,6 +9,36 @@
 # Default view mode when entering shell
 default_view = "kanban"
 
+# ============================================================================
+# BACKEND CONFIGURATION - Support for different CLI tools
+# ============================================================================
+[backend]
+# Backend type: "taskwarrior" (default), "jira", or "custom"
+type = "taskwarrior"
+
+# Base command to execute
+command = "task"
+
+# Export format (usually "json")
+export_format = "json"
+
+# Command to get active context (optional)
+context_command = "task context show"
+
+# JIRA-CLI EXAMPLE - Uncomment and modify [backend] section above to use jira-cli
+# type = "jira"
+# command = "jira"
+# 
+# Field mapping from jira-cli to our Task model
+# [backend.field_mapping]
+# id = "key"
+# description = "fields.summary"
+# project = "fields.project.key"
+# status = "fields.status.name"
+# priority = "fields.priority.name"
+# due = "fields.duedate"
+# tags = "fields.labels"
+
 [kanban]
 # Grouping strategy: "status", "priority", "project", "tag", "custom"
 group_by = "status"
@@ -76,6 +106,9 @@ max_description_length = 80
 show_ids = true
 
 [colors]
+# Set enabled = false for complete black & white mode (no colors at all)
+enabled = true
+
 # Priority colors
 priority_high = "red"
 priority_medium = "yellow"
@@ -93,15 +126,43 @@ status_blocked = "red"
 urgency_critical = 15  # >= 15
 urgency_high = 10      # >= 10
 urgency_medium = 5     # >= 5
-# Below 5 is low
 
 urgency_critical_color = "red bold"
 urgency_high_color = "red"
 urgency_medium_color = "yellow"
 urgency_low_color = "white"
 
-# BLACK & WHITE MODE - Uncomment to use monochrome colors
+# Kanban column header colors
+header_backlog = "bold blue"
+header_in_progress = "bold yellow"
+header_waiting = "bold magenta"
+header_completed = "bold green"
+header_blocked = "bold red"
+header_default = "bold cyan"
+
+# Table header style
+table_header = "bold cyan"
+
+# Status icons (used in table/list views)
+icon_completed = "[green]✓[/green]"
+icon_active = "[yellow]▶[/yellow]"
+icon_waiting = "[blue]⏸[/blue]"
+icon_blocked = "[red]🚫[/red]"
+icon_pending = "[dim]○[/dim]"
+
+# Overdue warning indicator
+overdue_indicator = "[red bold]⚠[/red bold]"
+
+
+# ============================================================================
+# BLACK & WHITE MODE - Copy this section to [colors] to use monochrome
+# ============================================================================
 # [colors]
+# enabled = false  # Disables ALL colors
+# 
+# # OR keep enabled = true and use these neutral colors:
+# enabled = true
+# 
 # priority_high = "white bold"
 # priority_medium = "white"
 # priority_low = "white dim"
@@ -120,6 +181,23 @@ urgency_low_color = "white"
 # urgency_high_color = "white bold"
 # urgency_medium_color = "white"
 # urgency_low_color = "white dim"
+# 
+# header_backlog = "bold"
+# header_in_progress = "bold"
+# header_waiting = "bold"
+# header_completed = "bold"
+# header_blocked = "bold"
+# header_default = "bold"
+# 
+# table_header = "bold"
+# 
+# icon_completed = "✓"
+# icon_active = "▶"
+# icon_waiting = "⏸"
+# icon_blocked = "!"
+# icon_pending = "○"
+# 
+# overdue_indicator = "⚠"
 
 [shell]
 # Enable command history

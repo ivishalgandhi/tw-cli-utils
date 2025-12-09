@@ -111,7 +111,7 @@ class TableView(BaseView):
         """Create the base table structure"""
         table = RichTable(
             show_header=True,
-            header_style="bold cyan",
+            header_style=self.config.colors.table_header if self.config.colors.enabled else "bold",
             box=box.SIMPLE if not self.config.table.show_grid else box.ROUNDED,
             show_lines=False,
             pad_edge=True,
@@ -153,23 +153,38 @@ class TableView(BaseView):
             # Apply styling based on urgency - don't truncate, let table handle it
             desc = task.description
             
-            # Better status icon with color
-            if task.status == "completed":
-                icon = "[green]✓[/green]"
-            elif task.is_active:
-                icon = "[yellow]▶[/yellow]"
-            elif task.status == "waiting":
-                icon = "[blue]⏸[/blue]"
-            elif task.is_blocked:
-                icon = "[red]🚫[/red]"
+            # Status icon from config
+            if not self.config.colors.enabled:
+                # Black & white mode - no colors
+                if task.status == "completed":
+                    icon = "✓"
+                elif task.is_active:
+                    icon = "▶"
+                elif task.status == "waiting":
+                    icon = "⏸"
+                elif task.is_blocked:
+                    icon = "!"
+                else:
+                    icon = "○"
             else:
-                icon = "[dim]○[/dim]"
+                # Use configured colors
+                if task.status == "completed":
+                    icon = self.config.colors.icon_completed
+                elif task.is_active:
+                    icon = self.config.colors.icon_active
+                elif task.status == "waiting":
+                    icon = self.config.colors.icon_waiting
+                elif task.is_blocked:
+                    icon = self.config.colors.icon_blocked
+                else:
+                    icon = self.config.colors.icon_pending
             
-            urgency_color = self.get_urgency_color(task.urgency)
+            urgency_color = self.get_urgency_color(task.urgency) if self.config.colors.enabled else ""
             
             # Add overdue indicator
             if task.is_overdue:
-                desc = f"[red bold]⚠[/red bold] {desc}"
+                indicator = self.config.colors.overdue_indicator if self.config.colors.enabled else "⚠"
+                desc = f"{indicator} {desc}"
             
             row.append(f"{icon} [{urgency_color}]{desc}[/{urgency_color}]")
         
@@ -398,19 +413,21 @@ class TableView(BaseView):
         for column_name, task_strings in columns_formatted.items():
             count = len(task_strings)
             
-            # Style based on column type
-            if "Progress" in column_name:
-                header_style = "bold yellow"
+            # Style based on column type - use config colors
+            if not self.config.colors.enabled:
+                header_style = "bold"
+            elif "Progress" in column_name:
+                header_style = self.config.colors.header_in_progress
             elif "Completed" in column_name:
-                header_style = "bold green"
+                header_style = self.config.colors.header_completed
             elif "Blocked" in column_name:
-                header_style = "bold red"
+                header_style = self.config.colors.header_blocked
             elif "Backlog" in column_name:
-                header_style = "bold blue"
+                header_style = self.config.colors.header_backlog
             elif "Waiting" in column_name:
-                header_style = "bold magenta"
+                header_style = self.config.colors.header_waiting
             else:
-                header_style = "bold cyan"
+                header_style = self.config.colors.header_default
             
             # Column header without task count
             header = column_name

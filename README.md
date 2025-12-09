@@ -82,9 +82,44 @@ Alternative groupings: priority, project, tag
 **Config file location:**
 - Linux/macOS: `~/.config/tw-cli/config.toml`
 - WSL: `~/.config/tw-cli/config.toml` (same as Linux)
-- Windows: `%USERPROFILE%\.config\tw-cli\config.toml`
+- Windows: `%USERPROFILE%\\.config\\tw-cli\\config.toml`
 
 **Note:** tw-cli respects your Taskwarrior configuration in `~/.taskrc`, including context settings. If you have a context defined (e.g., `task context work`), tw-cli will honor it.
+
+### Black & White Mode
+
+To remove all colors, set in `~/.config/tw-cli/config.toml`:
+
+```toml
+[colors]
+enabled = false  # Disables ALL colors for clean terminal output
+```
+
+Or customize with neutral colors - see `example-config.toml` for full black & white preset.
+
+### Backend Support (Experimental)
+
+tw-cli can work with other CLI tools beyond Taskwarrior:
+
+```toml
+[backend]
+type = "jira"  # or "taskwarrior", "custom"
+command = "jira"
+export_format = "json"
+
+[backend.field_mapping]
+id = "key"
+description = "fields.summary"
+project = "fields.project.key"
+status = "fields.status.name"
+```
+
+**Supported backends:**
+- **Taskwarrior** (default) - Full support
+- **Jira-CLI** ([ankitpokhrel/jira-cli](https://github.com/ankitpokhrel/jira-cli)) - Experimental
+- **Custom** - Define your own JSON-based CLI tool
+
+### Example Configurations
 
 ```toml
 default_view = "kanban"
