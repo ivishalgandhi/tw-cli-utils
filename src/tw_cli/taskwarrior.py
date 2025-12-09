@@ -67,11 +67,16 @@ class TaskWarriorClient:
         cmd_parts.append("export")
         
         try:
+            # Preserve environment to respect ~/.taskrc and context settings
+            import os
+            env = os.environ.copy()
+            
             result = subprocess.run(
                 cmd_parts,
                 capture_output=True,
                 text=True,
-                timeout=30
+                timeout=30,
+                env=env
             )
             
             if result.returncode != 0:

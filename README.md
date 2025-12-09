@@ -79,7 +79,12 @@ Alternative groupings: priority, project, tag
 
 ## Configuration
 
-Config file: `~/.config/tw-cli/config.toml`
+**Config file location:**
+- Linux/macOS: `~/.config/tw-cli/config.toml`
+- WSL: `~/.config/tw-cli/config.toml` (same as Linux)
+- Windows: `%USERPROFILE%\.config\tw-cli\config.toml`
+
+**Note:** tw-cli respects your Taskwarrior configuration in `~/.taskrc`, including context settings. If you have a context defined (e.g., `task context work`), tw-cli will honor it.
 
 ```toml
 default_view = "kanban"

@@ -1,5 +1,10 @@
 # tw-cli Configuration File
-# Place this file at: ~/.config/tw-cli/config.toml
+# 
+# Linux/macOS/WSL: ~/.config/tw-cli/config.toml
+# Windows: %USERPROFILE%\.config\tw-cli\config.toml
+#
+# Note: tw-cli respects your Taskwarrior settings in ~/.taskrc
+# including active context (task context <name>)
 
 # Default view mode when entering shell
 default_view = "kanban"
