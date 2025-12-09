@@ -84,7 +84,22 @@ class ColorConfig(BaseModel):
     urgency_medium_color: str = "yellow"
     urgency_low_color: str = "white"
     
-    # Table/Kanban column header colors
+    # Due date colors
+    due_overdue: str = "red bold"
+    due_soon: str = "yellow"
+    due_normal: str = "white"
+    
+    # Table column header colors
+    column_id: str = "dim"
+    column_description: str = ""
+    column_status: str = ""
+    column_project: str = "blue"
+    column_tags: str = "magenta"
+    column_due: str = "yellow"
+    column_priority: str = ""
+    column_urgency: str = ""
+    
+    # Kanban column header colors
     header_backlog: str = "bold blue"
     header_in_progress: str = "bold yellow"
     header_waiting: str = "bold magenta"
@@ -94,6 +109,14 @@ class ColorConfig(BaseModel):
     
     # Table header style
     table_header: str = "bold cyan"
+    
+    # List view specific colors
+    list_id: str = "dim cyan"
+    list_project: str = "blue dim"
+    list_tags: str = "magenta dim"
+    
+    # Border and panel colors
+    border_style: str = "yellow"
     
     # Status icons with colors (for table/list views)
     icon_completed: str = "[green]✓[/green]"

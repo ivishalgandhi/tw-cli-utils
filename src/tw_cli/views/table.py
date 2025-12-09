@@ -41,9 +41,10 @@ class TableView(BaseView):
         if not tasks:
             from rich.panel import Panel
             self.console.print()
+            border_style = self.config.colors.border_style if self.config.colors.enabled else ""
             self.console.print(Panel(
                 "[yellow]No tasks found[/yellow]\n\nTry adjusting your filter or run: [cyan]task add 'Your first task'[/cyan]",
-                border_style="yellow",
+                border_style=border_style,
                 padding=(1, 2)
             ))
             self.console.print()
@@ -123,19 +124,20 @@ class TableView(BaseView):
         columns = self.config.table.columns
         
         if "id" in columns:
-            id_style = "dim" if self.config.colors.enabled else ""
+            id_style = self.config.colors.column_id if self.config.colors.enabled else ""
             table.add_column("ID", justify="right", style=id_style, no_wrap=True, min_width=4, max_width=6)
         if "description" in columns:
-            table.add_column("Description", style="", no_wrap=False, ratio=3)  # Takes 3x space
+            desc_style = self.config.colors.column_description if self.config.colors.enabled else ""
+            table.add_column("Description", style=desc_style, no_wrap=False, ratio=3)  # Takes 3x space
         if "project" in columns:
-            project_style = "blue" if self.config.colors.enabled else ""
+            project_style = self.config.colors.column_project if self.config.colors.enabled else ""
             table.add_column("Project", style=project_style, no_wrap=True, ratio=1)
         if "tags" in columns:
-            tags_style = "magenta" if self.config.colors.enabled else ""
+            tags_style = self.config.colors.column_tags if self.config.colors.enabled else ""
             table.add_column("Tags", style=tags_style, no_wrap=False, ratio=1)
         if "due" in columns:
-            due_style = "yellow" if self.config.colors.enabled else ""
-            table.add_column("Due", style=due_style, no_wrap=True, min_width=12, max_width=15)
+            due_col_style = self.config.colors.column_due if self.config.colors.enabled else ""
+            table.add_column("Due", style=due_col_style, no_wrap=True, min_width=12, max_width=15)
         if "priority" in columns:
             table.add_column("Pri", justify="center", no_wrap=True, min_width=4, max_width=5)
         if "urgency" in columns:
@@ -199,7 +201,12 @@ class TableView(BaseView):
             if task.due:
                 due_str = self.format_date(task.due)
                 if self.config.colors.enabled:
-                    due_style = "red bold" if task.is_overdue else "yellow" if task.is_due_soon else "white"
+                    if task.is_overdue:
+                        due_style = self.config.colors.due_overdue
+                    elif task.is_due_soon:
+                        due_style = self.config.colors.due_soon
+                    else:
+                        due_style = self.config.colors.due_normal
                     row.append(f"[{due_style}]{due_str}[/{due_style}]")
                 else:
                     row.append(due_str)
@@ -238,9 +245,10 @@ class TableView(BaseView):
         if not tasks:
             from rich.panel import Panel
             self.console.print()
+            border_style = self.config.colors.border_style if self.config.colors.enabled else ""
             self.console.print(Panel(
                 "[yellow]No tasks found[/yellow]\n\nTry adjusting your filter or run: [cyan]task add 'Your first task'[/cyan]",
-                border_style="yellow",
+                border_style=border_style,
                 padding=(1, 2)
             ))
             self.console.print()

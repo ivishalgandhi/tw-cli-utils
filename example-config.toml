@@ -132,6 +132,21 @@ urgency_high_color = "red"
 urgency_medium_color = "yellow"
 urgency_low_color = "white"
 
+# Due date colors
+due_overdue = "red bold"
+due_soon = "yellow"
+due_normal = "white"
+
+# Table column header colors (applied to column headers)
+column_id = "dim"
+column_description = ""
+column_status = ""
+column_project = "blue"
+column_tags = "magenta"
+column_due = "yellow"
+column_priority = ""
+column_urgency = ""
+
 # Kanban column header colors
 header_backlog = "bold blue"
 header_in_progress = "bold yellow"
@@ -142,6 +157,14 @@ header_default = "bold cyan"
 
 # Table header style
 table_header = "bold cyan"
+
+# List view specific colors
+list_id = "dim cyan"
+list_project = "blue dim"
+list_tags = "magenta dim"
+
+# Border and panel colors
+border_style = "yellow"
 
 # Status icons (used in table/list views)
 icon_completed = "[green]✓[/green]"

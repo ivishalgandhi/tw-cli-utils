@@ -16,9 +16,10 @@ class ListView(BaseView):
         if not tasks:
             from rich.panel import Panel
             self.console.print()
+            border_style = self.config.colors.border_style if self.config.colors.enabled else ""
             self.console.print(Panel(
                 "[yellow]No tasks found[/yellow]\n\nTry adjusting your filter or run: [cyan]task add 'Your first task'[/cyan]",
-                border_style="yellow",
+                border_style=border_style,
                 padding=(1, 2)
             ))
             self.console.print()
@@ -53,7 +54,8 @@ class ListView(BaseView):
         
         # ID with better formatting
         if self.config.list.show_ids:
-            line.append(f"[{task.id or '?':>3}] ", style="dim cyan")
+            id_style = self.config.colors.list_id if self.config.colors.enabled else ""
+            line.append(f"[{task.id or '?':>3}] ", style=id_style)
         
         # Status icon with color
         if task.status == "completed":
@@ -86,18 +88,28 @@ class ListView(BaseView):
         
         # Project
         if task.project:
-            line.append(f" ({task.project})", style="blue dim")
+            project_style = self.config.colors.list_project if self.config.colors.enabled else ""
+            line.append(f" ({task.project})", style=project_style)
         
         # Tags - better formatting
         if task.tags:
             tags_display = self.format_tags(task.tags, max_length=40)
-            line.append(f" {tags_display}", style="magenta dim")
+            tags_style = self.config.colors.list_tags if self.config.colors.enabled else ""
+            line.append(f" {tags_display}", style=tags_style)
         
         # Due date with better icon
         if task.due:
             due_str = " 📅  " + self.format_date(task.due)
-            due_style = "red bold" if task.is_overdue else "yellow" if task.is_due_soon else "cyan dim"
-            line.append(due_str, style=due_style)
+            if self.config.colors.enabled:
+                if task.is_overdue:
+                    due_style = self.config.colors.due_overdue
+                elif task.is_due_soon:
+                    due_style = self.config.colors.due_soon
+                else:
+                    due_style = self.config.colors.due_normal
+                line.append(due_str, style=due_style)
+            else:
+                line.append(due_str)
         
         # Urgency with better styling
         urg_style = "red bold" if task.urgency >= 15 else "yellow" if task.urgency >= 10 else "dim"
