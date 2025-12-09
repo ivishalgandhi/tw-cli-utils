@@ -13,11 +13,64 @@ Enhanced Taskwarrior CLI with beautiful views - kanban boards, tables, and more.
 ## Installation
 
 ```bash
-# Using uv (recommended)
+# Clone the repository
+git clone https://github.com/ivishalgandhi/tw-cli-utils.git
+cd tw-cli-utils
+
+# Switch to feature branch (until merged to main)
+git checkout feature/jira-integration
+
+# Install dependencies
+uv pip install -e .  # Using uv (recommended)
+# OR
+pip install -e .     # Using pip
+```
+
+## Setup
+
+### First Time Setup
+
+1. **Create configuration directory:**
+   ```bash
+   mkdir -p ~/.config/tw-cli
+   ```
+
+2. **Copy example configuration:**
+   ```bash
+   cp example-config.toml ~/.config/tw-cli/config.toml
+   ```
+
+3. **Edit configuration (optional):**
+   ```bash
+   nano ~/.config/tw-cli/config.toml  # or vim, code, etc.
+   ```
+
+4. **Verify installation:**
+   ```bash
+   tw-cli --help
+   tw-cli view table  # Test with TaskWarrior
+   ```
+
+### Setup on New Machine
+
+If you already have tw-cli on another machine:
+
+```bash
+# 1. Clone and update
+git clone https://github.com/ivishalgandhi/tw-cli-utils.git
+cd tw-cli-utils
+git checkout feature/jira-integration
+git pull origin feature/jira-integration
+
+# 2. Install
 uv pip install -e .
 
-# Or using pip
-pip install -e .
+# 3. Setup config
+mkdir -p ~/.config/tw-cli
+cp example-config.toml ~/.config/tw-cli/config.toml
+
+# 4. Test
+tw-cli view kanban
 ```
 
 ## Quick Start
