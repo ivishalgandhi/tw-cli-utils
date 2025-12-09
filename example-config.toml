@@ -252,7 +252,7 @@ max_tasks_per_column = 20
 
 [table]
 # Columns to display (available: id, description, project, tags, due, priority, urgency, status)
-columns = ["id", "description", "project", "tags", "due", "priority", "urgency"]
+columns = ["id", "description", "status", "project", "tags", "due", "priority", "urgency"]
 
 # Default sort column and order
 default_sort = "urgency"
