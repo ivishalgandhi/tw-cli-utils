@@ -198,21 +198,30 @@ class TableView(BaseView):
         if "due" in columns:
             if task.due:
                 due_str = self.format_date(task.due)
-                due_style = "red bold" if task.is_overdue else "yellow" if task.is_due_soon else "white"
-                row.append(f"[{due_style}]{due_str}[/{due_style}]")
+                if self.config.colors.enabled:
+                    due_style = "red bold" if task.is_overdue else "yellow" if task.is_due_soon else "white"
+                    row.append(f"[{due_style}]{due_str}[/{due_style}]")
+                else:
+                    row.append(due_str)
             else:
                 row.append("")
         
         if "priority" in columns:
             if task.priority:
-                pri_color = self.get_priority_color(task.priority)
-                row.append(f"[{pri_color}]{task.priority}[/{pri_color}]")
+                if self.config.colors.enabled:
+                    pri_color = self.get_priority_color(task.priority)
+                    row.append(f"[{pri_color}]{task.priority}[/{pri_color}]")
+                else:
+                    row.append(task.priority)
             else:
                 row.append("")
         
         if "urgency" in columns:
-            urg_color = self.get_urgency_color(task.urgency)
-            row.append(f"[{urg_color}]{task.urgency:.1f}[/{urg_color}]")
+            if self.config.colors.enabled:
+                urg_color = self.get_urgency_color(task.urgency)
+                row.append(f"[{urg_color}]{task.urgency:.1f}[/{urg_color}]")
+            else:
+                row.append(f"{task.urgency:.1f}")
         
         if "status" in columns:
             status_color = self.get_status_color(task)
