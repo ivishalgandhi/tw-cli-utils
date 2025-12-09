@@ -10,7 +10,8 @@ from rich.console import Console
 
 from . import __version__
 from .shell import start_shell
-from .taskwarrior import TaskWarriorClient, TaskWarriorError
+from .backends import create_backend
+from .backends.factory import UnsupportedBackendError
 from .config import get_config
 from .models import GroupBy
 from .views.table import TableView
@@ -57,17 +58,15 @@ def view(
         # Get config
         config = get_config()
         
-        # Default command if none provided
-        # Note: We append filters to 'task' to let context apply naturally
-        if not command:
-            # For kanban, show pending and recently completed tasks
-            # For other views, show only pending
-            # The context filter (if active) will be applied by taskwarrior automatically
-            command = "task"
+        # Create backend based on configuration
+        backend = create_backend(config.backend)
         
-        # Execute taskwarrior command
-        client = TaskWarriorClient()
-        tasks = client.execute_command(command)
+        # Default command if none provided
+        if not command:
+            command = "task" if config.backend.type == "taskwarrior" else f"{config.backend.command} issue list --plain"
+        
+        # Execute command via backend
+        tasks = backend.execute_command(command)
         
         # Render in requested view
         if mode == "kanban":
@@ -88,8 +87,8 @@ def view(
             console.print("Available modes: kanban, table, markdown, list")
             sys.exit(1)
     
-    except TaskWarriorError as e:
-        console.print(f"[red]Taskwarrior error: {e}[/red]")
+    except UnsupportedBackendError as e:
+        console.print(f"[red]Backend error: {e}[/red]")
         sys.exit(1)
     except Exception as e:
         console.print(f"[red]Error: {e}[/red]")

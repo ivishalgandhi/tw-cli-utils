@@ -10,7 +10,8 @@ from rich.panel import Panel
 from rich.markdown import Markdown
 from rich.table import Table as RichTable
 
-from .taskwarrior import TaskWarriorClient, TaskWarriorError
+from .backends import create_backend
+from .backends.factory import UnsupportedBackendError
 from .config import get_config
 from .models import GroupBy
 from .views.table import TableView
@@ -24,7 +25,7 @@ class InteractiveShell:
     def __init__(self):
         self.console = Console()
         self.config = get_config()
-        self.client = TaskWarriorClient()
+        self.backend = create_backend(self.config.backend)
         self.current_view = self.config.default_view
         self.current_group_by = self.config.kanban.group_by
         self.running = True
@@ -190,7 +191,7 @@ Example: `task +work`, `task project:home status:pending`
         """Execute a taskwarrior command and render results"""
         try:
             # Execute command
-            tasks = self.client.execute_command(command)
+            tasks = self.backend.execute_command(command)
             
             # Render in current view
             if self.current_view == 'kanban':
