@@ -92,7 +92,27 @@ completed_days = 7
 [table]
 columns = ["id", "description", "project", "tags", "due", "priority", "urgency"]
 default_sort = "urgency"
+
+[colors]
+# For black & white mode, use:
+priority_high = "white bold"
+priority_medium = "white"
+priority_low = "white dim"
+priority_none = "white dim"
+
+status_active = "white bold"
+status_pending = "white"
+status_waiting = "white dim"
+status_completed = "dim"
+status_blocked = "white bold"
+
+urgency_critical_color = "white bold"
+urgency_high_color = "white bold"
+urgency_medium_color = "white"
+urgency_low_color = "white dim"
 ```
+
+See `example-config.toml` for all available options.
 
 ## Requirements
 

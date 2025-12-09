@@ -95,6 +95,27 @@ urgency_high_color = "red"
 urgency_medium_color = "yellow"
 urgency_low_color = "white"
 
+# BLACK & WHITE MODE - Uncomment to use monochrome colors
+# [colors]
+# priority_high = "white bold"
+# priority_medium = "white"
+# priority_low = "white dim"
+# priority_none = "white dim"
+# 
+# status_active = "white bold"
+# status_pending = "white"
+# status_waiting = "white dim"
+# status_completed = "dim"
+# status_blocked = "white bold"
+# 
+# urgency_critical = 15
+# urgency_high = 10
+# urgency_medium = 5
+# urgency_critical_color = "white bold"
+# urgency_high_color = "white bold"
+# urgency_medium_color = "white"
+# urgency_low_color = "white dim"
+
 [shell]
 # Enable command history
 enable_history = true
