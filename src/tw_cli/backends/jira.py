@@ -80,9 +80,9 @@ class JiraBackend(BaseBackend):
         if cmd_parts[0] != self.command:
             cmd_parts = [self.command] + cmd_parts
         
-        # Ensure we get JSON output
-        if "--json" not in cmd_parts and "-j" not in cmd_parts:
-            cmd_parts.append("--json")
+        # Ensure we get JSON output - jira-cli uses --raw flag for JSON
+        if "--raw" not in cmd_parts and "--json" not in cmd_parts and "-j" not in cmd_parts:
+            cmd_parts.append("--raw")
         
         try:
             result = subprocess.run(
@@ -94,6 +94,9 @@ class JiraBackend(BaseBackend):
             
             if result.returncode != 0:
                 error_msg = result.stderr.strip() or result.stdout.strip()
+                # Handle "no results" gracefully - return empty list instead of error
+                if "no result found" in error_msg.lower() or "no issues found" in error_msg.lower():
+                    return []
                 raise JiraBackendError(f"Command failed: {error_msg}")
             
             # Parse JSON output
