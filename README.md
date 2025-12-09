@@ -97,27 +97,119 @@ enabled = false  # Disables ALL colors for clean terminal output
 
 Or customize with neutral colors - see `example-config.toml` for full black & white preset.
 
-### Backend Support (Experimental)
+## Backend Support
 
-tw-cli can work with other CLI tools beyond Taskwarrior:
+tw-cli uses a **pluggable backend architecture** to work with different CLI tools beyond Taskwarrior.
+
+### Supported Backends
+
+| Backend | Status | Command | Description |
+|---------|--------|---------|-------------|
+| **Taskwarrior** | ✅ Full Support | `task` | Default backend, all features work |
+| **Jira-CLI** | ✅ Ready | `jira` | Full integration with field mapping |
+| **Custom** | ⚙️ Configurable | Any | Define your own JSON-based CLI tool |
+
+### Configuration
+
+#### TaskWarrior (Default)
 
 ```toml
 [backend]
-type = "jira"  # or "taskwarrior", "custom"
+type = "taskwarrior"
+command = "task"
+```
+
+#### Jira-CLI Integration
+
+```toml
+[backend]
+type = "jira"
 command = "jira"
 export_format = "json"
 
+# Optional: Custom field mapping (defaults provided)
 [backend.field_mapping]
-id = "key"
-description = "fields.summary"
-project = "fields.project.key"
-status = "fields.status.name"
+id = "key"                      # Jira issue key (e.g., PROJ-123)
+uuid = "id"                     # Jira issue ID
+description = "fields.summary"  # Issue summary
+status = "fields.status.name"   # Status (maps to pending/completed/waiting)
+project = "fields.project.key"  # Project key
+priority = "fields.priority.name"  # Priority (maps to H/M/L)
+tags = "fields.labels"          # Jira labels
+due = "fields.duedate"          # Due date
+entry = "fields.created"        # Created date
+modified = "fields.updated"     # Updated date
 ```
 
-**Supported backends:**
-- **Taskwarrior** (default) - Full support
-- **Jira-CLI** ([ankitpokhrel/jira-cli](https://github.com/ankitpokhrel/jira-cli)) - Experimental
-- **Custom** - Define your own JSON-based CLI tool
+### Jira-CLI Setup
+
+1. **Install Jira-CLI:**
+   ```bash
+   # macOS
+   brew install ankitpokhrel/tap/jira-cli
+   
+   # Or download from https://github.com/ankitpokhrel/jira-cli/releases
+   ```
+
+2. **Configure Jira-CLI:**
+   ```bash
+   jira init
+   # Follow prompts to set up Jira server and credentials
+   ```
+
+3. **Configure tw-cli:**
+   ```bash
+   # Edit ~/.config/tw-cli/config.toml
+   [backend]
+   type = "jira"
+   command = "jira"
+   ```
+
+4. **Use tw-cli with Jira:**
+   ```bash
+   tw-cli view kanban          # View Jira issues as kanban
+   tw-cli view table           # View Jira issues as table
+   tw-cli shell                # Interactive shell with Jira
+   ```
+
+### Field Mapping
+
+The backend uses **dot notation** to extract fields from JSON responses:
+
+```toml
+[backend.field_mapping]
+description = "fields.summary"  # Extracts data["fields"]["summary"]
+project = "fields.project.key"  # Extracts data["fields"]["project"]["key"]
+```
+
+### Status and Priority Mapping
+
+**Jira Status → tw-cli:**
+- Done/Closed/Resolved/Complete → `completed`
+- In Progress/Doing/Active → `pending`
+- Waiting/Blocked/On Hold → `waiting`
+- Others → `pending`
+
+**Jira Priority → tw-cli:**
+- Highest/Critical/Blocker → `H`
+- High → `H`
+- Medium/Normal → `M`
+- Low/Minor → `L`
+
+### Custom Backend Example
+
+```toml
+[backend]
+type = "custom"
+command = "your-cli-tool"
+export_format = "json"
+
+[backend.field_mapping]
+id = "ticket_number"
+description = "title"
+status = "state"
+# ... define your mappings
+```
 
 ### Example Configurations
 
