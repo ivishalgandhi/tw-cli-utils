@@ -1,0 +1,107 @@
+# tw-cli Configuration File
+# Place this file at: ~/.config/tw-cli/config.toml
+
+# Default view mode when entering shell
+default_view = "kanban"
+
+[kanban]
+# Grouping strategy: "status", "priority", "project", "tag", "custom"
+group_by = "status"
+
+# For tag-based grouping, specify the tag prefix
+# Example: tag_prefix = "area" groups by +area.work, +area.personal, etc.
+# tag_prefix = "area"
+
+# Show completed tasks
+show_completed = true
+completed_days = 7  # Show tasks completed in last N days
+
+# Maximum tasks per column (for readability)
+max_tasks_per_column = 20
+
+# Minimum width for kanban columns
+column_min_width = 40
+
+# Custom columns (only used when group_by = "custom")
+# [[kanban.columns]]
+# name = "🔥 Today"
+# filter = "due:today"
+# color = "red"
+#
+# [[kanban.columns]]
+# name = "📅 This Week"
+# filter = "due:week"
+# color = "yellow"
+#
+# [[kanban.columns]]
+# name = "🔮 Later"
+# filter = "status:pending -due:week"
+# color = "blue"
+
+[table]
+# Columns to display (available: id, description, project, tags, due, priority, urgency, status, entry, end, modified)
+columns = ["id", "description", "project", "tags", "due", "priority", "urgency"]
+
+# Default sort column and order
+default_sort = "urgency"
+sort_order = "desc"  # or "asc"
+
+# Pagination
+page_size = 50
+
+# Show grid lines
+show_grid = true
+
+[markdown]
+# Group tasks by project in markdown view
+group_by_project = true
+
+# Include metadata in frontmatter
+include_metadata = true
+
+# Use checkboxes for pending tasks
+use_checkboxes = true
+
+[list]
+# Show full descriptions or truncate
+truncate_description = false
+max_description_length = 80
+
+# Show task IDs
+show_ids = true
+
+[colors]
+# Priority colors
+priority_high = "red"
+priority_medium = "yellow"
+priority_low = "blue"
+priority_none = "white"
+
+# Status colors
+status_active = "green bold"
+status_pending = "cyan"
+status_waiting = "yellow"
+status_completed = "dim"
+status_blocked = "red"
+
+# Urgency thresholds and colors
+urgency_critical = 15  # >= 15
+urgency_high = 10      # >= 10
+urgency_medium = 5     # >= 5
+# Below 5 is low
+
+urgency_critical_color = "red bold"
+urgency_high_color = "red"
+urgency_medium_color = "yellow"
+urgency_low_color = "white"
+
+[shell]
+# Enable command history
+enable_history = true
+history_file = "~/.config/tw-cli/history"
+
+# Auto-completion
+enable_autocomplete = true
+
+# Show welcome message
+show_welcome = true
