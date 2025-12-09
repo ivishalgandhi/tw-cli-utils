@@ -20,6 +20,35 @@ class TaskWarriorClient:
     def __init__(self):
         """Initialize the Taskwarrior client"""
         self._verify_installation()
+        self._context_filter = self._get_context_filter()
+    
+    def _get_context_filter(self) -> Optional[str]:
+        """Get the active context filter from taskwarrior"""
+        try:
+            import os
+            env = os.environ.copy()
+            
+            result = subprocess.run(
+                ["task", "context", "show"],
+                capture_output=True,
+                text=True,
+                timeout=5,
+                env=env
+            )
+            
+            if result.returncode == 0 and result.stdout:
+                # Parse output to get read filter
+                # Format: "Context 'name' with filter 'xxx' is currently applied"
+                for line in result.stdout.split('\n'):
+                    if 'read filter:' in line.lower():
+                        # Extract filter between quotes
+                        import re
+                        match = re.search(r"'([^']+)'", line)
+                        if match:
+                            return match.group(1)
+            return None
+        except:
+            return None
     
     def _verify_installation(self):
         """Verify that Taskwarrior is installed"""
@@ -62,6 +91,12 @@ class TaskWarriorClient:
         
         if cmd_parts[0] != "task":
             cmd_parts = ["task"] + cmd_parts
+        
+        # If there's an active context and no explicit filter, add context filter
+        # This is needed because 'task export' doesn't respect context automatically
+        if self._context_filter and len(cmd_parts) == 1:
+            # Only 'task' command, add context filter
+            cmd_parts.append(self._context_filter)
         
         # Append "export" to get JSON output
         cmd_parts.append("export")

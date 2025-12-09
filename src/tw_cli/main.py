@@ -57,12 +57,13 @@ def view(
         # Get config
         config = get_config()
         
-        # Default command if none provided - include completed for kanban view
+        # Default command if none provided
+        # Note: We append filters to 'task' to let context apply naturally
         if not command:
-            if mode == "kanban":
-                command = "task status:pending or status:completed"
-            else:
-                command = "task status:pending"
+            # For kanban, show pending and recently completed tasks
+            # For other views, show only pending
+            # The context filter (if active) will be applied by taskwarrior automatically
+            command = "task"
         
         # Execute taskwarrior command
         client = TaskWarriorClient()
